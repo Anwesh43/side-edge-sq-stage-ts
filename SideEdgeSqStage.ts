@@ -192,7 +192,7 @@ class SESNode {
     }
 }
 
-class SideEdgeEq {
+class SideEdgeSq {
 
     root : SESNode = new SESNode(0)
     curr : SESNode = this.root
@@ -213,5 +213,27 @@ class SideEdgeEq {
 
     startUpdating(cb : Function) {
         this.curr.startUpdating(cb)
+    }
+}
+
+class Renderer {
+
+    ses : SideEdgeSq = new SideEdgeSq()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.ses.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.ses.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.ses.update(() => {
+                    cb()
+                    this.animator.stop()
+                })
+            })
+        })
     }
 }
