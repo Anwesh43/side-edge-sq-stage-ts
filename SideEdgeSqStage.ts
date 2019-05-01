@@ -1,7 +1,7 @@
 const w : number = window.innerWidth
 const h : number = window.innerHeight
-const scGap : number = 0.51
-const scDiv : number = 0.05
+const scGap : number = 0.05
+const scDiv : number = 0.51
 const strokeFactor : number = 90
 const sizeFactor : number = 2.9
 const foreColor : string = "#673AB7"
@@ -37,7 +37,7 @@ class ScaleUtil {
 
 class DrawingUtil {
 
-    static drawLine(context : CanvasRenderingContext2D, x1 : number, x2 : number, y1 : number, y2 : number) {
+    static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
         context.beginPath()
         context.moveTo(x1, y1)
         context.lineTo(x2, y2)
@@ -64,18 +64,25 @@ class DrawingUtil {
         context.lineWidth = Math.min(w, h) / strokeFactor
         const sc1 : number = ScaleUtil.divideScale(scale, 0, 2)
         const sc2 : number = ScaleUtil.divideScale(scale, 1, 2)
-
+        context.save()
+        context.translate(gap * (i + 1), h / 2)
         for (var j = 0; j < parts; j++) {
-            const sc1j : number = ScaleUtil.divideScale(scale, j, parts)
-            DrawingUtil.drawSideEdgeLine(context, sc1, sc2, size)
+            const sf : number = 1 - 2 * j
+            const sc1j : number = ScaleUtil.divideScale(sc1, j, parts)
+            const sc2j : number = ScaleUtil.divideScale(sc2, j, parts)
+            context.save()
+            context.scale(sf, sf)
+            DrawingUtil.drawSideEdgeLine(context, sc1j, sc2j, size)
+            context.restore()
         }
+        context.restore()
     }
 }
 
 class SideEdgeSqStage {
 
     context : CanvasRenderingContext2D
-    canvas : HTMLCanvasElement
+    canvas : HTMLCanvasElement = document.createElement('canvas')
     renderer : Renderer = new Renderer()
 
     initCanvas() {
@@ -99,7 +106,7 @@ class SideEdgeSqStage {
         }
     }
 
-    static initCanvas() {
+    static init() {
         const stage : SideEdgeSqStage = new SideEdgeSqStage()
         stage.initCanvas()
         stage.render()
@@ -115,6 +122,7 @@ class State {
 
     update(cb : Function) {
         this.scale += ScaleUtil.updateValue(this.scale, this.dir, parts, parts * parts)
+        console.log(this.scale)
         if (Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale + this.dir
             this.dir = 0
@@ -208,7 +216,7 @@ class SideEdgeSq {
 
     update(cb : Function) {
         this.curr.update(() => {
-            this.curr.getNext(this.dir, () => {
+            this.curr = this.curr.getNext(this.dir, () => {
                 this.dir *= -1
             })
             cb()
