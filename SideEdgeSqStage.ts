@@ -76,6 +76,7 @@ class SideEdgeSqStage {
 
     context : CanvasRenderingContext2D
     canvas : HTMLCanvasElement
+    renderer : Renderer = new Renderer()
 
     initCanvas() {
         this.canvas.width = w
@@ -87,11 +88,14 @@ class SideEdgeSqStage {
     render() {
         this.context.fillStyle = backColor
         this.context.fillRect(0, 0, w, h)
+        this.renderer.render(this.context)
     }
 
     handleTap() {
         this.canvas.onmousedown = () => {
-
+            this.renderer.handleTap(() => {
+                this.render()
+            })
         }
     }
 
