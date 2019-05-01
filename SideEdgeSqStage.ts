@@ -9,6 +9,7 @@ const backColor : string = "#BDBDBD"
 const eqFactor : number = 4
 const parts : number = 2
 const nodes : number = 5
+const delay : number = 25
 
 class ScaleUtil {
 
@@ -147,7 +148,7 @@ class Animator {
     start(cb : Function) {
         if (!this.animated) {
             this.animated = true
-            this.interval = setInterval(cb, 50)
+            this.interval = setInterval(cb, delay)
         }
     }
 
